@@ -9,10 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.vleite.cursomc.domain.Categoria;
 import com.vleite.cursomc.domain.Cidade;
+import com.vleite.cursomc.domain.Cliente;
+import com.vleite.cursomc.domain.Endereco;
 import com.vleite.cursomc.domain.Estado;
 import com.vleite.cursomc.domain.Produto;
+import com.vleite.cursomc.domain.enums.TipoCliente;
 import com.vleite.cursomc.repositories.CategoriaRepository;
 import com.vleite.cursomc.repositories.CidadeRepository;
+import com.vleite.cursomc.repositories.ClienteRepository;
+import com.vleite.cursomc.repositories.EnderecoRepository;
 import com.vleite.cursomc.repositories.EstadoRepository;
 import com.vleite.cursomc.repositories.ProdutoRepository;
 
@@ -20,16 +25,22 @@ import com.vleite.cursomc.repositories.ProdutoRepository;
 public class CursomcApplication implements CommandLineRunner{
 
 	@Autowired
-	CategoriaRepository categoriaRepository;
+	private CategoriaRepository categoriaRepository;
 	
 	@Autowired
-	ProdutoRepository produtoRepository;
+	private ProdutoRepository produtoRepository;
 	
 	@Autowired
-	CidadeRepository cidadeRepository;
+	private CidadeRepository cidadeRepository;
 	
 	@Autowired
-	EstadoRepository estadoRepository;
+	private EstadoRepository estadoRepository;
+	
+	@Autowired
+	private EnderecoRepository enderecoRepository;
+	
+	@Autowired
+	private ClienteRepository clienteRepository;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
@@ -67,9 +78,19 @@ public class CursomcApplication implements CommandLineRunner{
 		est1.getCidades().addAll(asList(cid1));
 		est2.getCidades().addAll(asList(cid2, cid3));
 		
-		
 		estadoRepository.saveAll(asList(est1, est2));
 		cidadeRepository.saveAll(asList(cid1, cid2, cid3));
+		
+		Cliente cli1 = new Cliente(null,  "Maria Silva", "maria@gmail.com", "44444444444", TipoCliente.PESSOA_FISICA);
+		cli1.getTelefones().addAll(asList("27363323", "93838393"));
+		
+		Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38220834", cli1, cid1);
+		Endereco e2 = new Endereco(null, "Avenida Matos", "105", "Sala 800", "Centro", "38777012", cli1, cid2);
+		
+		cli1.getEnderecos().addAll(asList(e1, e2));
+		
+		clienteRepository.saveAll(asList(cli1));
+		enderecoRepository.saveAll(asList(e1, e2));	
 	}
 
 }
