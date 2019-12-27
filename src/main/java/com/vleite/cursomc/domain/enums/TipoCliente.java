@@ -1,7 +1,5 @@
 package com.vleite.cursomc.domain.enums;
 
-import java.util.Arrays;
-
 public enum TipoCliente {
 	PESSOA_FISICA(1, "Pessoa Física"), PESSOA_JURIDICA(2, "Pessoa Jurídica");
 
