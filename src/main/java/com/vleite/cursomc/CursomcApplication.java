@@ -14,6 +14,7 @@ import com.vleite.cursomc.domain.Cidade;
 import com.vleite.cursomc.domain.Cliente;
 import com.vleite.cursomc.domain.Endereco;
 import com.vleite.cursomc.domain.Estado;
+import com.vleite.cursomc.domain.ItemPedido;
 import com.vleite.cursomc.domain.Pagamento;
 import com.vleite.cursomc.domain.PagamentoComBoleto;
 import com.vleite.cursomc.domain.PagamentoComCartao;
@@ -26,6 +27,7 @@ import com.vleite.cursomc.repositories.CidadeRepository;
 import com.vleite.cursomc.repositories.ClienteRepository;
 import com.vleite.cursomc.repositories.EnderecoRepository;
 import com.vleite.cursomc.repositories.EstadoRepository;
+import com.vleite.cursomc.repositories.ItemPedidoRepository;
 import com.vleite.cursomc.repositories.PagamentoRepository;
 import com.vleite.cursomc.repositories.PedidoRepository;
 import com.vleite.cursomc.repositories.ProdutoRepository;
@@ -56,6 +58,9 @@ public class CursomcApplication implements CommandLineRunner{
 
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
+	
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
@@ -122,6 +127,20 @@ public class CursomcApplication implements CommandLineRunner{
 		
 		pedidoRepository.saveAll(asList(ped1, ped2));
 		pagamentoRepository.saveAll(asList(pagto1, pagto2)); 
+		
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.0, 1, 2000.0);
+		ItemPedido ip2 = new ItemPedido(ped1, p2, 0.0, 2, 80.0);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.0, 1, 800.0);
+		
+		ped1.getItens().addAll(asList(ip1, ip2));
+		ped2.getItens().addAll(asList(ip3));
+		
+		p1.getItens().addAll(asList(ip1, ip2));
+		p2.getItens().addAll(asList(ip2, ip3));
+		
+		itemPedidoRepository.saveAll(asList(ip1, ip2, ip3));
+		
+		
 	}
 
 }
