@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.vleite.cursomc.domain.Categoria;
+import com.vleite.cursomc.dto.CategoriaDTO;
 import com.vleite.cursomc.repositories.CategoriaRepository;
 import com.vleite.cursomc.services.exceptions.DataIntegrityException;
 import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
@@ -54,6 +55,10 @@ public class CategoriaService {
 	public Page<Categoria> findPage(int page, int size, String direction, String sortBy) {
 		PageRequest pageRequest = PageRequest.of(page, size, Direction.fromString(direction), sortBy);
 		return repository.findAll(pageRequest);
+	}
+
+	public Categoria toCategoria(CategoriaDTO obj) {
+		return new Categoria(obj.getId(), obj.getNome());
 	}
 	
 }

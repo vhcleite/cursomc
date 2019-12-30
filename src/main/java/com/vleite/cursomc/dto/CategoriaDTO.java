@@ -2,6 +2,9 @@ package com.vleite.cursomc.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import com.vleite.cursomc.domain.Categoria;
 
 public class CategoriaDTO implements Serializable {
@@ -10,6 +13,8 @@ public class CategoriaDTO implements Serializable {
 
 	private Integer id;
 
+	@NotEmpty
+	@Size(min = 5, max = 20, message = "O tamanho deve estar entre 5 e 20 caracteres")
 	private String nome;
 
 	public CategoriaDTO() {
