@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.vleite.cursomc.domain.Cliente;
 import com.vleite.cursomc.dto.ClienteDTO;
+import com.vleite.cursomc.dto.NewClienteDTO;
 import com.vleite.cursomc.services.ClienteService;
 
 @RestController
@@ -34,10 +35,10 @@ public class ClienteResource {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteDTO obj) {
-		Cliente categoria = service.insert(service.toCliente(obj));
+	public ResponseEntity<Void> insert(@Valid @RequestBody NewClienteDTO obj) {
+		Cliente cliente = service.insert(service.toCliente(obj));
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")//
-				.buildAndExpand(categoria.getId()).toUri();
+				.buildAndExpand(cliente.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 

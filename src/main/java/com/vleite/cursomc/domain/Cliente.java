@@ -120,6 +120,12 @@ public class Cliente implements Serializable {
 	public void setTelefones(Set<String> telefones) {
 		this.telefones = telefones;
 	}
+	
+	public void addTelefone(String telefone) {
+		if(telefone != null && !telefone.isEmpty()) {
+			getTelefones().add(telefone);
+		}
+	}
 
 	public List<Pedido> getPedidos() {
 		return pedidos;
