@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.vleite.cursomc.domain.Cidade;
 import com.vleite.cursomc.domain.Cliente;
 import com.vleite.cursomc.domain.Endereco;
-import com.vleite.cursomc.domain.enums.TipoCliente;
 import com.vleite.cursomc.dto.ClienteDTO;
 import com.vleite.cursomc.dto.NewClienteDTO;
 import com.vleite.cursomc.repositories.CidadeRepository;
@@ -52,7 +51,7 @@ public class ClienteService {
 
 	public Cliente toCliente(@Valid NewClienteDTO obj) {
 		Cliente client = new Cliente(null, obj.getNome(), obj.getEmail(), obj.getCpfOuCnpj(),
-				TipoCliente.toEnum(obj.getTipo()));
+				obj.getTipo());
 
 		Optional<Cidade> optCidade = cidadeRepository.findById(obj.getCidadeId());
 		Endereco endereco = new Endereco(null, obj.getLogradouro(), obj.getNumero(), obj.getComplemento(),
