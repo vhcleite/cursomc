@@ -3,6 +3,8 @@ package com.vleite.cursomc.services;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,7 @@ public class PedidoService {
 				String.format("Objeto não encontrado! Id: %d, Tipo: %s", id, Pedido.class.getCanonicalName())));
 	}
 
+	@Transactional
 	public Pedido insert(Pedido obj) {
 		
 		obj.setId(null);
