@@ -74,9 +74,9 @@ public class DbService {
 		Categoria cat9 = new Categoria(null, "Iluminição");
 		Categoria cat10 = new Categoria(null, "Banheiro");
 
-		Produto p1 = new Produto(null, "computador", 2000.0);
-		Produto p2 = new Produto(null, "impressora", 800.0);
-		Produto p3 = new Produto(null, "mouse", 80.0);
+		Produto p1 = new Produto(null, "Computador", 2000.0);
+		Produto p2 = new Produto(null, "Impressora", 800.0);
+		Produto p3 = new Produto(null, "Mouse", 80.0);
 		Produto p4 = new Produto(null, "Mesa de escritório", 300.0);
 		Produto p5 = new Produto(null, "Toalha", 50.0);
 		Produto p6 = new Produto(null, "Colcha", 200.0);
