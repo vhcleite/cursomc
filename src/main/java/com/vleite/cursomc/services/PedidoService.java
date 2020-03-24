@@ -12,7 +12,6 @@ import com.vleite.cursomc.domain.ItemPedido;
 import com.vleite.cursomc.domain.PagamentoComBoleto;
 import com.vleite.cursomc.domain.Pedido;
 import com.vleite.cursomc.domain.enums.EstadoPagamento;
-import com.vleite.cursomc.repositories.ClienteRepository;
 import com.vleite.cursomc.repositories.ItemPedidoRepository;
 import com.vleite.cursomc.repositories.PagamentoRepository;
 import com.vleite.cursomc.repositories.PedidoRepository;
