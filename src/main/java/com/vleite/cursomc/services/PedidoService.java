@@ -17,6 +17,7 @@ import com.vleite.cursomc.repositories.ItemPedidoRepository;
 import com.vleite.cursomc.repositories.PagamentoRepository;
 import com.vleite.cursomc.repositories.PedidoRepository;
 import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
+import com.vleite.cursomc.services.interfaces.IEmailService;
 
 @Service
 public class PedidoService {
@@ -38,6 +39,9 @@ public class PedidoService {
 	
 	@Autowired
 	private ClienteService clienteService;
+	
+	@Autowired
+	private IEmailService emailService;
 
 	public Pedido find(Integer id) {
 		Optional<Pedido> obj = pedidoRepository.findById(id);
@@ -73,7 +77,7 @@ public class PedidoService {
 		
 		itemPedidoRepository.saveAll(obj.getItens());
 		
-		System.out.println(obj);
+		emailService.sendOrderConfirmationEmail(obj);
 		
 		return obj;
 	}
