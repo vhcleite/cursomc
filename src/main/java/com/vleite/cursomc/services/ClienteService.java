@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
 @Service
 public class ClienteService {
 
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
+	
 	@Autowired
 	ClienteRepository clienteRepository;
 
@@ -51,7 +55,7 @@ public class ClienteService {
 
 	public Cliente toCliente(@Valid NewClienteDTO obj) {
 		Cliente client = new Cliente(null, obj.getNome(), obj.getEmail(), obj.getCpfOuCnpj(),
-				obj.getTipo());
+				obj.getTipo(), passwordEncoder.encode(obj.getSenha()));
 
 		Optional<Cidade> optCidade = cidadeRepository.findById(obj.getCidadeId());
 		Endereco endereco = new Endereco(null, obj.getLogradouro(), obj.getNumero(), obj.getComplemento(),

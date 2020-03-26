@@ -28,6 +28,9 @@ public class NewClienteDTO implements Serializable {
 	private String cpfOuCnpj;
 	
 	private Integer tipo;
+	
+	@NotEmpty
+	private String senha;
 
 	// Endereco
 
@@ -108,6 +111,14 @@ public class NewClienteDTO implements Serializable {
 		this.tipo = tipo;
 	}
 
+	public String getSenha() {
+		return senha;
+	}
+	
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
 	public String getLogradouro() {
 		return logradouro;
 	}
@@ -179,5 +190,6 @@ public class NewClienteDTO implements Serializable {
 	public void setCidadeId(Integer cidadeId) {
 		this.cidadeId = cidadeId;
 	}
+
 
 }
