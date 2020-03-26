@@ -21,6 +21,7 @@ import com.vleite.cursomc.domain.PagamentoComCartao;
 import com.vleite.cursomc.domain.Pedido;
 import com.vleite.cursomc.domain.Produto;
 import com.vleite.cursomc.domain.enums.EstadoPagamento;
+import com.vleite.cursomc.domain.enums.Perfil;
 import com.vleite.cursomc.domain.enums.TipoCliente;
 import com.vleite.cursomc.repositories.CategoriaRepository;
 import com.vleite.cursomc.repositories.CidadeRepository;
@@ -128,14 +129,21 @@ public class DbService {
 
 		Cliente cli1 = new Cliente(null, "Maria Silva", "maria@gmail.com", "44444444444", TipoCliente.PESSOA_FISICA, passwordEncoder.encode("123"));
 		cli1.getTelefones().addAll(asList("27363323", "93838393"));
+		
+		Cliente cli2 = new Cliente(null, "Ana Costa", "ana@gmail.com", "31628382740", TipoCliente.PESSOA_FISICA, passwordEncoder.encode("123"));
+		cli2.addPerfil(Perfil.ADMIN);
+		cli2.getTelefones().addAll(asList("22156202", "940008009"));
 
 		Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38220834", cli1, cid1);
 		Endereco e2 = new Endereco(null, "Avenida Matos", "105", "Sala 800", "Centro", "38777012", cli1, cid2);
 
+		Endereco e3 = new Endereco(null, "Avenida Floriano", "20106", null, "Centro", "38454012", cli2, cid2);
+		
 		cli1.getEnderecos().addAll(asList(e1, e2));
+		cli2.getEnderecos().addAll(asList(e3));
 
-		clienteRepository.saveAll(asList(cli1));
-		enderecoRepository.saveAll(asList(e1, e2));
+		clienteRepository.saveAll(asList(cli1, cli2));
+		enderecoRepository.saveAll(asList(e1, e2, e3));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
