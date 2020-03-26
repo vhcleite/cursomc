@@ -103,4 +103,8 @@ public class ClienteService {
 		PageRequest pageRequest = PageRequest.of(page, size, Direction.fromString(direction), sortBy);
 		return clienteRepository.findAll(pageRequest);
 	}
+
+	public Cliente getByEmail(String username) {
+		return clienteRepository.findByEmail(username);
+	}
 }
