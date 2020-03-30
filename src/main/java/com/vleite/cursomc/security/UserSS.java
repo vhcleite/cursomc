@@ -1,6 +1,7 @@
 package com.vleite.cursomc.security;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +25,7 @@ public class UserSS implements UserDetails {
 	public UserSS() {
 	}
 
-	public UserSS(Integer id, String email, String senha, Collection<Perfil> perfis) {
+	public UserSS(Integer id, String email, String senha, Set<Perfil> perfis) {
 		super();
 		this.id = id;
 		this.email = email;
