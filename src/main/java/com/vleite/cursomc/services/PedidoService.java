@@ -6,8 +6,12 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.vleite.cursomc.domain.Cliente;
 import com.vleite.cursomc.domain.ItemPedido;
 import com.vleite.cursomc.domain.PagamentoComBoleto;
 import com.vleite.cursomc.domain.Pedido;
@@ -15,6 +19,8 @@ import com.vleite.cursomc.domain.enums.EstadoPagamento;
 import com.vleite.cursomc.repositories.ItemPedidoRepository;
 import com.vleite.cursomc.repositories.PagamentoRepository;
 import com.vleite.cursomc.repositories.PedidoRepository;
+import com.vleite.cursomc.security.UserSS;
+import com.vleite.cursomc.services.exceptions.AuthorizationException;
 import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
 import com.vleite.cursomc.services.interfaces.IEmailService;
 
@@ -46,6 +52,16 @@ public class PedidoService {
 		Optional<Pedido> obj = pedidoRepository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				String.format("Objeto não encontrado! Id: %d, Tipo: %s", id, Pedido.class.getCanonicalName())));
+	}
+	
+	public Page<Pedido> findPage(int page, int size, String direction, String sortBy) {
+		UserSS user = UserService.authenticated();
+		if(user == null) {
+		 throw new AuthorizationException("Acesso negado");
+		}
+		Cliente cliente = clienteService.find(user.getId());
+		PageRequest pageRequest = PageRequest.of(page, size, Direction.fromString(direction), sortBy);
+		return pedidoRepository.findByCliente(cliente, pageRequest);
 	}
 
 	@Transactional
