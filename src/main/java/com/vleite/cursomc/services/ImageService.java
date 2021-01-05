@@ -1,6 +1,7 @@
 package com.vleite.cursomc.services;
 
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,5 +49,9 @@ public class ImageService {
             throw new RuntimeException("Erro ao ler arquivo");
         }
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    }
+
+    public BufferedImage resize(BufferedImage sourceImg, int size) {
+        return Scalr.resize(sourceImg, Scalr.Method.ULTRA_QUALITY, size);
     }
 }

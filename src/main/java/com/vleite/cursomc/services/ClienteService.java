@@ -136,6 +136,7 @@ public class ClienteService {
         }
 
         BufferedImage image = imagService.getImageFromFile(file);
+        image = imagService.resize(image, 200);
         String filename = prefix + user.getId() + ".jpg";
         URI uri = s3Service.uploadFile(imagService.getInputStream(image, "jpg"), filename, "jpg");
 
