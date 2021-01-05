@@ -14,6 +14,7 @@ import com.vleite.cursomc.services.exceptions.AuthorizationException;
 import com.vleite.cursomc.services.exceptions.DataIntegrityException;
 import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -23,12 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Optional;
 
 @Service
 public class ClienteService {
+
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
@@ -41,6 +46,9 @@ public class ClienteService {
 
     @Autowired
     EnderecoRepository enderecoRepository;
+
+    @Autowired
+    private ImageService imagService;
 
     @Autowired
     private S3Service s3Service;
@@ -122,6 +130,20 @@ public class ClienteService {
     }
 
     public URI uploadClientPicture(MultipartFile file) {
-        return s3Service.uploadFile(file);
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado");
+        }
+
+        BufferedImage image = imagService.getImageFromFile(file);
+        String filename = prefix + user.getId() + ".jpg";
+        URI uri = s3Service.uploadFile(imagService.getInputStream(image, "jpg"), filename, "jpg");
+
+        Optional<Cliente> clientOpt = clienteRepository.findById(user.getId());
+        Cliente cliente = clientOpt.get();
+        cliente.setFileUrl(uri.toString());
+        clienteRepository.save(cliente);
+
+        return uri;
     }
 }

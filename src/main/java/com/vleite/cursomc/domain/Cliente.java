@@ -67,6 +67,8 @@ public class Cliente implements Serializable {
 	@JsonIgnore
 	private List<Pedido> pedidos = new ArrayList<Pedido>();
 
+	private String fileUrl;
+
 	public Cliente() {
 		addPerfil(Perfil.CLIENTE);
 	}
@@ -201,4 +203,11 @@ public class Cliente implements Serializable {
 	}
 
 
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
 }

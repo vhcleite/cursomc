@@ -2,7 +2,6 @@ package com.vleite.cursomc.services;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,12 +26,20 @@ public class S3Service {
             String filename = file.getOriginalFilename();
             String contentType = file.getContentType();
 
+            return uploadFile(is, filename, "jpg");
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao fazer upload de arquivo");
+        }
+    }
+
+    public URI uploadFile(InputStream is, String filename, String extension) {
+        try {
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(contentType);
+            objectMetadata.setContentType("image");
 
             s3Client.putObject(bucketName, filename, is, objectMetadata);
             return s3Client.getUrl(bucketName, filename).toURI();
-        } catch (IOException | URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new RuntimeException("Erro ao fazer upload de arquivo");
         }
     }
