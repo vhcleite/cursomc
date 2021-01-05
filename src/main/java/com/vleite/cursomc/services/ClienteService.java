@@ -1,18 +1,5 @@
 package com.vleite.cursomc.services;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.vleite.cursomc.domain.Cidade;
 import com.vleite.cursomc.domain.Cliente;
 import com.vleite.cursomc.domain.Endereco;
@@ -26,95 +13,115 @@ import com.vleite.cursomc.security.UserSS;
 import com.vleite.cursomc.services.exceptions.AuthorizationException;
 import com.vleite.cursomc.services.exceptions.DataIntegrityException;
 import com.vleite.cursomc.services.exceptions.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class ClienteService {
 
-	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
-	
-	@Autowired
-	ClienteRepository clienteRepository;
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	CidadeRepository cidadeRepository;
+    @Autowired
+    ClienteRepository clienteRepository;
 
-	@Autowired
-	EnderecoRepository enderecoRepository;
+    @Autowired
+    CidadeRepository cidadeRepository;
 
-	public Cliente find(Integer id) {
-		
-		UserSS user = UserService.authenticated();
-		
-		if(user == null || (!user.hasRole(Perfil.ADMIN) && id != user.getId())) {
-			throw new AuthorizationException("Acesso negado");
-		}
-		
-		Optional<Cliente> obj = clienteRepository.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException(
-				String.format("Objeto não encontrado! Id: %d, Tipo: %s", id, Cliente.class.getCanonicalName())));
-	}
+    @Autowired
+    EnderecoRepository enderecoRepository;
 
-	public Collection<Cliente> findAll() {
-		return clienteRepository.findAll();
-	}
+    @Autowired
+    private S3Service s3Service;
 
-	public Cliente toCliente(ClienteDTO obj) {
-		return new Cliente(obj.getId(), obj.getNome(), obj.getEmail());
-	}
+    public Cliente find(Integer id) {
 
-	public Cliente toCliente(@Valid NewClienteDTO obj) {
-		Cliente client = new Cliente(null, obj.getNome(), obj.getEmail(), obj.getCpfOuCnpj(),
-				obj.getTipo(), passwordEncoder.encode(obj.getSenha()));
+        UserSS user = UserService.authenticated();
 
-		Optional<Cidade> optCidade = cidadeRepository.findById(obj.getCidadeId());
-		Endereco endereco = new Endereco(null, obj.getLogradouro(), obj.getNumero(), obj.getComplemento(),
-				obj.getBairro(), obj.getCep(), client, optCidade.get());
+        if (user == null || (!user.hasRole(Perfil.ADMIN) && id != user.getId())) {
+            throw new AuthorizationException("Acesso negado");
+        }
 
-		client.getEnderecos().add(endereco);
+        Optional<Cliente> obj = clienteRepository.findById(id);
+        return obj.orElseThrow(() -> new ObjectNotFoundException(
+                String.format("Objeto não encontrado! Id: %d, Tipo: %s", id, Cliente.class.getCanonicalName())));
+    }
 
-		client.addTelefone(obj.getTelefone1());
-		client.addTelefone(obj.getTelefone2());
-		client.addTelefone(obj.getTelefone3());
+    public Collection<Cliente> findAll() {
+        return clienteRepository.findAll();
+    }
 
-		return client;
+    public Cliente toCliente(ClienteDTO obj) {
+        return new Cliente(obj.getId(), obj.getNome(), obj.getEmail());
+    }
 
-	}
+    public Cliente toCliente(@Valid NewClienteDTO obj) {
+        Cliente client = new Cliente(null, obj.getNome(), obj.getEmail(), obj.getCpfOuCnpj(),
+                obj.getTipo(), passwordEncoder.encode(obj.getSenha()));
 
-	@Transactional
-	public Cliente insert(Cliente obj) {
-		obj.setId(null);
-		obj = clienteRepository.save(obj);
-		enderecoRepository.saveAll(obj.getEnderecos());
-		return obj;
-	}
+        Optional<Cidade> optCidade = cidadeRepository.findById(obj.getCidadeId());
+        Endereco endereco = new Endereco(null, obj.getLogradouro(), obj.getNumero(), obj.getComplemento(),
+                obj.getBairro(), obj.getCep(), client, optCidade.get());
 
-	public Cliente update(Cliente obj) {
-		Cliente client = find(obj.getId());
-		updateClient(client, obj);
-		return clienteRepository.save(client);
-	}
+        client.getEnderecos().add(endereco);
 
-	private void updateClient(Cliente client, Cliente obj) {
-		client.setNome(obj.getNome());
-		client.setEmail(obj.getEmail());
-	}
+        client.addTelefone(obj.getTelefone1());
+        client.addTelefone(obj.getTelefone2());
+        client.addTelefone(obj.getTelefone3());
 
-	public void delete(Integer id) {
-		find(id);
-		try {
-			clienteRepository.deleteById(id);
-		} catch (Exception e) {
-			throw new DataIntegrityException("Não é possível excluir pois há entidades relacionadas.");
-		}
-	}
+        return client;
 
-	public Page<Cliente> findPage(int page, int size, String direction, String sortBy) {
-		PageRequest pageRequest = PageRequest.of(page, size, Direction.fromString(direction), sortBy);
-		return clienteRepository.findAll(pageRequest);
-	}
+    }
 
-	public Cliente getByEmail(String username) {
-		return clienteRepository.findByEmail(username);
-	}
+    @Transactional
+    public Cliente insert(Cliente obj) {
+        obj.setId(null);
+        obj = clienteRepository.save(obj);
+        enderecoRepository.saveAll(obj.getEnderecos());
+        return obj;
+    }
+
+    public Cliente update(Cliente obj) {
+        Cliente client = find(obj.getId());
+        updateClient(client, obj);
+        return clienteRepository.save(client);
+    }
+
+    private void updateClient(Cliente client, Cliente obj) {
+        client.setNome(obj.getNome());
+        client.setEmail(obj.getEmail());
+    }
+
+    public void delete(Integer id) {
+        find(id);
+        try {
+            clienteRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new DataIntegrityException("Não é possível excluir pois há entidades relacionadas.");
+        }
+    }
+
+    public Page<Cliente> findPage(int page, int size, String direction, String sortBy) {
+        PageRequest pageRequest = PageRequest.of(page, size, Direction.fromString(direction), sortBy);
+        return clienteRepository.findAll(pageRequest);
+    }
+
+    public Cliente getByEmail(String username) {
+        return clienteRepository.findByEmail(username);
+    }
+
+    public URI uploadClientPicture(MultipartFile file) {
+        return s3Service.uploadFile(file);
+    }
 }
