@@ -32,21 +32,16 @@ import java.util.Optional;
 @Service
 public class ClienteService {
 
-    @Value("${img.prefix.client.profile}")
-    private String prefix;
-
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     ClienteRepository clienteRepository;
-
     @Autowired
     CidadeRepository cidadeRepository;
-
     @Autowired
     EnderecoRepository enderecoRepository;
-
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
     @Autowired
     private ImageService imagService;
 
@@ -64,6 +59,22 @@ public class ClienteService {
         Optional<Cliente> obj = clienteRepository.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(
                 String.format("Objeto não encontrado! Id: %d, Tipo: %s", id, Cliente.class.getCanonicalName())));
+    }
+
+    public Cliente findByEmail(String email) {
+
+        UserSS user = UserService.authenticated();
+
+        if (user == null || (!user.hasRole(Perfil.ADMIN) && !user.getUsername().equals(email))) {
+            throw new AuthorizationException("Acesso negado");
+        }
+
+        Cliente obj = clienteRepository.findByEmail(email);
+        if (obj == null) {
+            throw new ObjectNotFoundException(
+                    String.format("Objeto não encontrado! Email: %s, Tipo: %s", email, Cliente.class.getName()));
+        }
+        return obj;
     }
 
     public Collection<Cliente> findAll() {
